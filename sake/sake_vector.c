@@ -198,18 +198,18 @@ int32_t sake_vector_binarysearch(sake_vector * vec, int32_t (*comparator) (const
     return sake_array_binarysearch(vec, GET_SIZE(GET_BASE_PTR(vec)), elt_size, comparator, target);
 }
 
-int32_t sake_vector_find(sake_vector * vec, int32_t (*comparator) (const void *, const void*), void * target)
+int32_t sake_vector_find(sake_vector * vec, bool (*predicate) (const void *, const void*), void * target)
 {
     uint32_t elt_size;
     elt_size = GET_ELT_SIZE(GET_BASE_PTR(vec));
-    return sake_array_find(vec, GET_SIZE(GET_BASE_PTR(vec)), elt_size, comparator, target);
+    return sake_array_find(vec, GET_SIZE(GET_BASE_PTR(vec)), elt_size, predicate, target);
 }
 
-int32_t sake_vector_rfind(sake_vector * vec, int32_t (*comparator) (const void *, const void*), void * target)
+int32_t sake_vector_rfind(sake_vector * vec, bool (*predicate) (const void *, const void*), void * target)
 {
     uint32_t elt_size;
     elt_size = GET_ELT_SIZE(GET_BASE_PTR(vec));
-    return sake_array_rfind(vec, GET_SIZE(GET_BASE_PTR(vec)), elt_size, comparator, target);
+    return sake_array_rfind(vec, GET_SIZE(GET_BASE_PTR(vec)), elt_size, predicate, target);
 }
 
 static sake_vector * _grow(sake_vector * vec, uint32_t size)

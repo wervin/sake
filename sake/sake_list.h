@@ -36,8 +36,8 @@ void sake_list_free(struct sake_list * l);
 bool sake_list_empty(struct sake_list * l);
 uint32_t sake_list_size(struct sake_list * l);
 void sake_list_mergesort(struct sake_list * l, int32_t (*comparator) (const void *, const void*));
-sake_list_node * sake_list_find(struct sake_list * l, int32_t (*comparator) (const void *, const void*), void * target);
-sake_list_node * sake_list_rfind(struct sake_list * l, int32_t (*comparator) (const void *, const void*), void * target);
+sake_list_node * sake_list_find(struct sake_list * l, bool (*predicate) (const void *, const void*), void * target);
+sake_list_node * sake_list_rfind(struct sake_list * l, bool (*predicate) (const void *, const void*), void * target);
 
 #ifdef __cplusplus
 }

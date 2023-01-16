@@ -31,8 +31,8 @@ sake_vector * sake_vector_copy(sake_vector * from, sake_vector * to);
 void sake_vector_heapsort(sake_vector * vec, int32_t (*comparator) (const void *, const void*));
 void sake_vector_quicksort(sake_vector * vec, int32_t (*comparator) (const void *, const void*));
 int32_t sake_vector_binarysearch(sake_vector * vec, int32_t (*comparator) (const void *, const void*), void * target);
-int32_t sake_vector_find(sake_vector * vec, int32_t (*comparator) (const void *, const void*), void * target);
-int32_t sake_vector_rfind(sake_vector * vec, int32_t (*comparator) (const void *, const void*), void * target);
+int32_t sake_vector_find(sake_vector * vec, bool (*predicate) (const void *, const void*), void * target);
+int32_t sake_vector_rfind(sake_vector * vec, bool (*predicate) (const void *, const void*), void * target);
 
 #ifdef __cplusplus
 }

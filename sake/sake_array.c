@@ -16,7 +16,6 @@
 #define AT(base, index, size) (((uint8_t *) (base)) + ((index) * (size)))
 
 static void _heapify(void * base, uint32_t n, uint32_t size, uint32_t root_idx, int32_t (*comparator)(const void *, const void *));
-static int32_t _find(void * base, uint32_t n, uint32_t size, int32_t (*comparator) (const void *, const void*), void * target);
 
 void sake_array_heapsort(void * base, uint32_t n, uint32_t size, int32_t (*comparator)(const void *, const void *))
 {
@@ -152,21 +151,21 @@ int32_t sake_array_binarysearch(void * base, uint32_t n, uint32_t size, int32_t 
     return -1;
 }
 
-int32_t sake_array_find(void * base, uint32_t n, uint32_t size, int32_t (*comparator) (const void *, const void*), void * target)
+int32_t sake_array_find(void * base, uint32_t n, uint32_t size, bool (*predicate) (const void *, const void*), void * target)
 {
     for (int32_t i = 0; i < n; i++)
     {
-        if (comparator(AT(base, i, size), target) == 0)
+        if (predicate(AT(base, i, size), target))
             return i;
     }
     return -1;
 }
 
-int32_t sake_array_rfind(void * base, uint32_t n, uint32_t size, int32_t (*comparator) (const void *, const void*), void * target)
+int32_t sake_array_rfind(void * base, uint32_t n, uint32_t size, bool (*predicate) (const void *, const void*), void * target)
 {
     for (int32_t i = n - 1; i >= 0; i--)
     {
-        if (comparator(AT(base, i, size), target) == 0)
+        if (predicate(AT(base, i, size), target))
             return i;
     }
     return -1;

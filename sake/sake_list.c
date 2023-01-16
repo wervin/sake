@@ -51,6 +51,8 @@ void sake_list_insert_head(struct sake_list * l, sake_list_node * new)
     /* If there is no tail set the tail too */
     if (l->tail == NULL)
         l->tail = GET_NODE_PTR(base);
+
+    l->size++;
 }
 
 void sake_list_insert_prev(struct sake_list * l, sake_list_node * front, sake_list_node * new)
@@ -74,6 +76,8 @@ void sake_list_insert_prev(struct sake_list * l, sake_list_node * front, sake_li
     SET_PREV(base, GET_NODE_PTR(base_prev));
     SET_PREV(GET_BASE_PTR(front), GET_NODE_PTR(base));
     SET_NEXT(base, front);
+
+    l->size++;
 }
 
 void sake_list_insert_tail(struct sake_list * l, sake_list_node * new)
@@ -95,6 +99,8 @@ void sake_list_insert_tail(struct sake_list * l, sake_list_node * new)
     /* If there is no head set the head too */
     if (l->head == NULL)
         l->head = GET_NODE_PTR(base);
+    
+    l->size++;
 }
 
 void sake_list_insert_sorted(struct sake_list * l, sake_list_node * new, int32_t (*comparator) (const void *, const void*))
@@ -150,6 +156,7 @@ void sake_list_remove_head(struct sake_list * l)
     if (l->destructor)
         l->destructor(* (sake_list_node **) GET_NODE_PTR(base));
     free(base);
+    l->size--;
 }
 
 void sake_list_remove(struct sake_list * l, sake_list_node * n)
@@ -170,6 +177,7 @@ void sake_list_remove(struct sake_list * l, sake_list_node * n)
         if (l->destructor)
             l->destructor(* (sake_list_node **) GET_NODE_PTR(base));
         free(base);
+        l->size--;
     }
 }
 
@@ -192,6 +200,7 @@ void sake_list_remove_tail(struct sake_list * l)
     if (l->destructor)
         l->destructor(* (sake_list_node **) GET_NODE_PTR(base));
     free(base);
+    l->size--;
 }
 
 void sake_list_free(struct sake_list * l)
@@ -207,6 +216,7 @@ void sake_list_free(struct sake_list * l)
             l->destructor(* (sake_list_node **) GET_NODE_PTR(base));
         free(base);
     }
+    l->size = 0;
 }
 
 bool sake_list_empty(struct sake_list * l)
@@ -312,22 +322,22 @@ void sake_list_mergesort(struct sake_list * l, int32_t (*comparator) (const void
     }
 }
 
-sake_list_node * sake_list_find(struct sake_list * l, int32_t (*comparator) (const void *, const void*), void * target)
+sake_list_node * sake_list_find(struct sake_list * l, bool (*predicate) (const void *, const void*), void * target)
 {
     sake_list_node * cur;
 
     cur = sake_list_head(l);
-    while (cur != NULL && comparator(cur, target) != 0)
+    while (cur != NULL && !predicate(cur, target))
         cur = sake_list_next(cur);
     return cur;
 }
 
-sake_list_node * sake_list_rfind(struct sake_list * l, int32_t (*comparator) (const void *, const void*), void * target)
+sake_list_node * sake_list_rfind(struct sake_list * l, bool (*predicate) (const void *, const void*), void * target)
 {
     sake_list_node * cur;
 
     cur = sake_list_tail(l);
-    while (cur != NULL && comparator(cur, target) != 0)
+    while (cur != NULL && !predicate(cur, target))
         cur = sake_list_prev(cur);
     return cur;
 }
