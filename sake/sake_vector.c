@@ -3,7 +3,7 @@
 
 #include "sake_vector.h"
 #include "sake_array.h"
-#include "sake_common.h"
+#include "sake_macro.h"
 
 #define GET_DESTRUCTOR(base)                (*((sake_vector_destructor *) ((uint8_t *) (base))))
 #define GET_ELT_SIZE(base)                  (*((uint32_t *) ((uint8_t *) (base) + sizeof(sake_vector_destructor))))

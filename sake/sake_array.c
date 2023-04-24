@@ -1,5 +1,5 @@
 #include "sake_array.h"
-#include "sake_common.h"
+#include "sake_macro.h"
 
 #define SWAP(a, b, size)                \
     SAKE_MACRO_BEGIN                    \
