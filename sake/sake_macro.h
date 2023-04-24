@@ -5,6 +5,6 @@
 
 #define SAKE_MACRO_END    } while(0)
 
-#define UNUSED(x)         (void)(x)
+#define SAKE_UNUSED(x)         (void)(x)
 
 #endif /* SAKE_MACRO_H */
