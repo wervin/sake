@@ -6,16 +6,20 @@
 #include "sake_vector.h"
 #include "sake_list.h"
 
+bool predicate(const void * a, const void * b) {
+  return *(int32_t *)a == *(int32_t *)b;
+}
+
 int32_t comparator(const void * a, const void * b) {
-   return ( *(int32_t *)a - *(int32_t *)b );
+  return ( *(int32_t *)a - *(int32_t *)b );
 }
 
-int32_t dynamic_comparator_sort(const void * a, const void * b) {
-   return ( **(int32_t **)a - **(int32_t **)b );
+bool dynamic_predicate(const void * a, const void * b) {
+  return **(int32_t **)a == *(int32_t *)b;
 }
 
-int32_t dynamic_comparator_find(const void * a, const void * b) {
-   return ( **(int32_t **)a - *(int32_t *)b );
+int32_t dynamic_comparator(const void * a, const void * b) {
+  return ( **(int32_t **)a - **(int32_t **)b );
 }
 
 START_TEST(check_array_heapsort)
@@ -60,7 +64,7 @@ START_TEST(check_array_find)
 {
   int32_t a[10] = {1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249};
   int32_t target = 2;
-  int32_t idx = sake_array_find(a, 10, sizeof(int32_t), comparator, &target);
+  int32_t idx = sake_array_find(a, 10, sizeof(int32_t), predicate, &target);
   ck_assert_int_eq(idx, 5);
 }
 END_TEST
@@ -69,7 +73,7 @@ START_TEST(check_array_rfind)
 {
   int32_t a[10] = {1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249};
   int32_t target = 2;
-  int32_t idx = sake_array_rfind(a, 10, sizeof(int32_t), comparator, &target);
+  int32_t idx = sake_array_rfind(a, 10, sizeof(int32_t), predicate, &target);
   ck_assert_int_eq(idx, 5);
 }
 END_TEST
@@ -274,7 +278,7 @@ START_TEST(check_vector_find)
   }
 
   int32_t target = 2;
-  int32_t idx = sake_vector_find(vec, comparator, &target);
+  int32_t idx = sake_vector_find(vec, predicate, &target);
   ck_assert_int_eq(idx, 5);
 
   sake_vector_free(vec);
@@ -293,7 +297,7 @@ START_TEST(check_vector_rfind)
   }
 
   int32_t target = 2;
-  int32_t idx = sake_vector_rfind(vec, comparator, &target);
+  int32_t idx = sake_vector_rfind(vec, predicate, &target);
   ck_assert_int_eq(idx, 5);
 
   sake_vector_free(vec);
@@ -345,7 +349,7 @@ START_TEST(check_list_new_static)
   }
 
   int target = 30;
-  cur = sake_list_find(&l, comparator, &target);
+  cur = sake_list_find(&l, predicate, &target);
   ck_assert_int_eq(*cur, 30);
 
   int32_t d = 100;
@@ -390,14 +394,14 @@ START_TEST(check_list_new_dynamic)
   *c = 40;
   sake_list_insert_tail(&l, &c);
 
-  sake_list_mergesort(&l, dynamic_comparator_sort);
+  sake_list_mergesort(&l, dynamic_comparator);
 
   int32_t *e = malloc(sizeof(int32_t));
   *e = 17;
-  sake_list_insert_sorted(&l, &e, dynamic_comparator_sort);
+  sake_list_insert_sorted(&l, &e, dynamic_comparator);
   int32_t *f = malloc(sizeof(int32_t));
   *f = 31;
-  sake_list_insert_sorted(&l, &f, dynamic_comparator_sort);
+  sake_list_insert_sorted(&l, &f, dynamic_comparator);
 
   i = 0;
   cur = sake_list_head(&l);
@@ -418,7 +422,7 @@ START_TEST(check_list_new_dynamic)
   }
 
   int target = 30;
-  cur = sake_list_find(&l, dynamic_comparator_find, &target);
+  cur = sake_list_find(&l, dynamic_predicate, &target);
   ck_assert_int_eq(**cur, 30);
 
   int32_t *d = malloc(sizeof(int32_t));
