@@ -8,13 +8,13 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(BUILD_SHARED_LIBS OFF)
 
 set(SAKE_SOURCES
-    sake/sake_array.c
-    sake/sake_list.c
-    sake/sake_vector.c
+    src/sake/array.c
+    src/sake/list.c
+    src/sake/vector.c
 )
 
 add_library(sake ${SAKE_SOURCES})
-target_include_directories(sake PUBLIC sake)
+target_include_directories(sake PUBLIC inc)
 
 enable_testing()
 add_subdirectory(tests)

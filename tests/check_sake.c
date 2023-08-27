@@ -2,9 +2,9 @@
 #include <stdint.h>
 #include <check.h>
 
-#include "sake_array.h"
-#include "sake_vector.h"
-#include "sake_list.h"
+#include "sake/array.h"
+#include "sake/vector.h"
+#include "sake/list.h"
 
 bool predicate(const void * a, const void * b) {
   return *(int32_t *)a == *(int32_t *)b;

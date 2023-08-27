@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
-#include "sake_list.h"
-#include "sake_macro.h"
+#include "sake/list.h"
+#include "sake/macro.h"
 
 #define GET_NEXT(base)                      (* (sake_list_node **) (((uint8_t *) (base))))
 #define GET_PREV(base)                      (* (sake_list_node **) (((uint8_t *) (base) + sizeof(sake_list_node *))))
