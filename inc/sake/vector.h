@@ -4,10 +4,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*
  *  +-----------------+----------+------+----------+------+
  *  | elem_destructor | elt_size | size | capacity | data |
@@ -33,9 +29,5 @@ void sake_vector_quicksort(sake_vector * vec, int32_t (*comparator) (const void 
 int32_t sake_vector_binarysearch(sake_vector * vec, int32_t (*comparator) (const void *, const void*), void * target);
 int32_t sake_vector_find(sake_vector * vec, bool (*predicate) (const void *, const void*), void * target);
 int32_t sake_vector_rfind(sake_vector * vec, bool (*predicate) (const void *, const void*), void * target);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* SAKE_VECTOR_H */

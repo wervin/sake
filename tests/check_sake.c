@@ -5,6 +5,7 @@
 #include "sake/array.h"
 #include "sake/vector.h"
 #include "sake/list.h"
+#include "sake/string.h"
 
 bool predicate(const void * a, const void * b) {
   return *(int32_t *)a == *(int32_t *)b;
@@ -314,7 +315,7 @@ START_TEST(check_list_new_static)
   int32_t * cur;
   int32_t i;
 
-  sake_list_init(&l, sizeof(int32_t), NULL);
+  sake_list_new(&l, sizeof(int32_t), NULL);
 
   int32_t a = 30;
   sake_list_insert_tail(&l, &a);
@@ -382,7 +383,7 @@ START_TEST(check_list_new_dynamic)
   int32_t ** cur;
   int32_t i;
 
-  sake_list_init(&l, sizeof(int32_t *), free);
+  sake_list_new(&l, sizeof(int32_t *), free);
 
   int32_t *a = malloc(sizeof(int32_t));
   *a = 30;
@@ -446,10 +447,35 @@ START_TEST(check_list_new_dynamic)
 }
 END_TEST
 
+START_TEST(check_string)
+{
+  {
+    char test[] = "test\n";
+    sake_string s = sake_string_new(test);
+    ck_assert_str_eq(s, test);
+    sake_string_free(s);
+  }
+
+  {
+    char test[] = "azùjfafùzeîghez$aruewjwf,ùqsd,az$epojazenamflkabznkq:bfwxklfjzapeo";
+    sake_string s = sake_string_new(test);
+    ck_assert_str_eq(s, test);
+    sake_string_free(s);
+  }
+
+  {
+    char test[] = "eazepjazr^pu)_&)é_'&é)u&é'lazbn&éàu&)";
+    sake_string s = sake_string_new(test);
+    ck_assert_str_eq(s, test);
+    sake_string_free(s);
+  }
+}
+END_TEST
+
 Suite *check_sake_suite(void)
 {
   Suite * s;
-  TCase * tc_core_array, * tc_core_vector, * tc_core_list;
+  TCase * tc_core_array, * tc_core_vector, * tc_core_list, *tc_core_string;
 
   s = suite_create("CheckSakeSuite");
   
@@ -474,9 +500,13 @@ Suite *check_sake_suite(void)
   tcase_add_test(tc_core_list, check_list_new_static);
   tcase_add_test(tc_core_list, check_list_new_dynamic);
 
+  tc_core_string = tcase_create("CheckString");
+  tcase_add_test(tc_core_string, check_string);
+
   suite_add_tcase(s, tc_core_array);
   suite_add_tcase(s, tc_core_vector);
   suite_add_tcase(s, tc_core_list);
+  suite_add_tcase(s, tc_core_string);
 
   return s;
 }

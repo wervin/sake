@@ -23,7 +23,7 @@
         } while (--__size > 0);             \
     SAKE_MACRO_END
 
-void sake_list_init(struct sake_list * l, uint32_t elt_size, sake_list_destructor destructor)
+void sake_list_new(struct sake_list * l, uint32_t elt_size, sake_list_destructor destructor)
 {
     l->head = NULL;
     l->tail = NULL;

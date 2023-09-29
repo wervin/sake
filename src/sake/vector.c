@@ -19,20 +19,12 @@
 
 #define VECTOR_META_SIZE                    (sizeof(sake_vector_destructor) + 3 * sizeof(uint32_t))
 
-#define SET(a, b, size)                     \
-    SAKE_MACRO_BEGIN                        \
-        uint32_t __size = (size);           \
-        uint8_t * __a = (a), * __b = (b);   \
-        do                                  \
-        {                                   \
-            *__a++ = *__b++;                \
-        } while (--__size > 0);             \
-    SAKE_MACRO_END
-
 #define AT(base, i, size) (((uint8_t *) (base)) + ((i) * (size)))
 
 static sake_vector * _grow(sake_vector * vec, uint32_t size);
 static uint32_t _next_pow2(uint32_t v);
+
+static inline void _set(void *a, void *b, uint32_t size);
 
 sake_vector * sake_vector_new(uint32_t elt_size, sake_vector_destructor destructor)
 {
@@ -71,7 +63,7 @@ sake_vector * sake_vector_push_back(sake_vector * vec, void * elt)
         vec = _grow(vec, size + 1);
 
     /* vec[size] = elt */
-    SET(AT(vec, size, elt_size), elt, elt_size);
+    _set(AT(vec, size, elt_size), elt, elt_size);
     SET_SIZE(GET_BASE_PTR(vec), size + 1);
 
     return vec;
@@ -89,7 +81,7 @@ void sake_vector_free(sake_vector * vec)
 
     if (destructor)
     {
-        for (int32_t i = 0; i < GET_SIZE(base); i++)
+        for (uint32_t i = 0; i < GET_SIZE(base); i++)
         {
             destructor(* (void **) AT(vec, i, elt_size));
         }
@@ -138,7 +130,7 @@ sake_vector * sake_vector_insert(sake_vector * vec, uint32_t index, void * elt)
         memmove(AT(vec, index + 1, elt_size), AT(vec, index, elt_size), elt_size * (size + 1 - index));
     
     /* vec[index] = elt */
-    SET(AT(vec, index, elt_size), elt, elt_size);
+    _set(AT(vec, index, elt_size), elt, elt_size);
     SET_SIZE(GET_BASE_PTR(vec), size + 1);
 
     return vec;
@@ -239,4 +231,14 @@ static uint32_t _next_pow2(uint32_t v)
     v++;
 
     return v;
+}
+
+
+static inline void _set(void *a, void *b, uint32_t size)
+{
+    uint8_t * __a = (a), * __b = (b);
+    do
+    {
+        *__a++ = *__b++;
+    } while (--size > 0);
 }

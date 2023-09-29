@@ -153,7 +153,7 @@ int32_t sake_array_binarysearch(void * base, uint32_t n, uint32_t size, int32_t 
 
 int32_t sake_array_find(void * base, uint32_t n, uint32_t size, bool (*predicate) (const void *, const void*), void * target)
 {
-    for (int32_t i = 0; i < n; i++)
+    for (uint32_t i = 0; i < n; i++)
     {
         if (predicate(AT(base, i, size), target))
             return i;
