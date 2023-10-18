@@ -33,6 +33,9 @@ sake_vector * sake_vector_new(uint32_t elt_size, sake_vector_destructor destruct
 
     size = VECTOR_META_SIZE + elt_size;
     base = malloc(size);
+    if (!base)
+        return NULL;
+    
     SET_DESTRUCTOR(base, destructor);
     SET_ELT_SIZE(base, elt_size);
     SET_SIZE(base, 0);
@@ -60,7 +63,11 @@ sake_vector * sake_vector_push_back(sake_vector * vec, void * elt)
     size = GET_SIZE(GET_BASE_PTR(vec));
 
     if (capacity < (size + 1))
+    {
         vec = _grow(vec, size + 1);
+        if (!vec)
+            return NULL;
+    }
 
     /* vec[size] = elt */
     _set(AT(vec, size, elt_size), elt, elt_size);
@@ -124,7 +131,11 @@ sake_vector * sake_vector_insert(sake_vector * vec, uint32_t index, void * elt)
     size = GET_SIZE(GET_BASE_PTR(vec));
 
     if (capacity < (size + 1))
+    {
         vec = _grow(vec, size + 1);
+        if (!vec)
+            return NULL;
+    }
 
     if (index < size)
         memmove(AT(vec, index + 1, elt_size), AT(vec, index, elt_size), elt_size * (size + 1 - index));
@@ -160,7 +171,11 @@ sake_vector * sake_vector_copy(sake_vector * from, sake_vector * to)
     capacity_to = GET_CAPACITY(GET_BASE_PTR(to));
 
     if (capacity_to < (size_from))
+    {
         to = _grow(to, size_from);
+        if (!to)
+            return NULL;
+    }
 
     memcpy(to, from, elt_size * size_from);
 
@@ -216,6 +231,9 @@ static sake_vector * _grow(sake_vector * vec, uint32_t size)
 
     base = GET_BASE_PTR(vec);
     base = realloc(base, new_size);
+    if (!base)
+        return NULL;
+    
     SET_CAPACITY(base, new_capacity);
     return GET_DATA_PTR(base);
 }
