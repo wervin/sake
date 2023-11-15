@@ -31,7 +31,8 @@ sake_string sake_string_new(const char *string)
     SET_SIZE(base, length + 1);
     SET_CAPACITY(base, capacity);
 
-    _set(GET_DATA_PTR(base), string, length);
+    if (length)
+        _set(GET_DATA_PTR(base), string, length);
     GET_DATA_PTR(base)[length] = '\0';
 
     return GET_DATA_PTR(base);
