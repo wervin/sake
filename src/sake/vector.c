@@ -138,7 +138,7 @@ sake_vector * sake_vector_insert(sake_vector * vec, uint32_t index, void * elt)
     }
 
     if (index < size)
-        memmove(AT(vec, index + 1, elt_size), AT(vec, index, elt_size), elt_size * (size + 1 - index));
+        memmove(AT(vec, index + 1, elt_size), AT(vec, index, elt_size), elt_size * (size - index));
     
     /* vec[index] = elt */
     _set(AT(vec, index, elt_size), elt, elt_size);
