@@ -115,8 +115,8 @@ void sake_vector_erase(sake_vector * vec, uint32_t index)
         tmp = * (void **) AT(vec, index, elt_size);
 
     size = GET_SIZE(GET_BASE_PTR(vec));
-    SET_SIZE(GET_BASE_PTR(vec), size - 1);
     memmove(AT(vec, index, elt_size), AT(vec, index + 1, elt_size), elt_size * (size - 1 - index));
+    SET_SIZE(GET_BASE_PTR(vec), size - 1);
 
     if (destructor)
         destructor(tmp);
