@@ -25,3 +25,5 @@ target_compile_options(sake PRIVATE
 
 enable_testing()
 add_subdirectory(tests)
+
+install(TARGETS sake)
