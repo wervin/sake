@@ -27,3 +27,4 @@ enable_testing()
 add_subdirectory(tests)
 
 install(TARGETS sake)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/inc/sake DESTINATION include)
