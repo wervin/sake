@@ -171,6 +171,54 @@ START_TEST(check_vector_new_dynamic)
 }
 END_TEST
 
+START_TEST(check_vector_insert)
+{
+  int32_t a[10] = {1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249};
+  int32_t b[20] = {1, 54, 29, 1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249, 51, 1249, 2, 4, 4124, 9, 1249};
+
+  int32_t * vec1 = sake_vector_new(sizeof(int32_t), NULL);
+
+  for (int i = 0; i < 10; i++)
+  {
+    vec1 = sake_vector_push_back(vec1, &a[i]);
+    ck_assert_int_eq(vec1[i], a[i]);
+    ck_assert_int_eq(sake_vector_size(vec1), i + 1);
+  }
+
+  vec1 = sake_vector_insert_range(vec1, 3, a, sizeof(a) / sizeof(uint32_t));
+  for (int i = 0; i < 20; i++)
+  {
+    ck_assert_int_eq(vec1[i], b[i]);
+  }
+  
+  sake_vector_free(vec1);
+}
+END_TEST
+
+START_TEST(check_vector_erase)
+{
+  int32_t b[20] = {1, 54, 29, 1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249, 51, 1249, 2, 4, 4124, 9, 1249};
+  int32_t a[10] = {1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249};
+
+  int32_t * vec1 = sake_vector_new(sizeof(int32_t), NULL);
+
+  for (int i = 0; i < 20; i++)
+  {
+    vec1 = sake_vector_push_back(vec1, &b[i]);
+    ck_assert_int_eq(vec1[i], b[i]);
+    ck_assert_int_eq(sake_vector_size(vec1), i + 1);
+  }
+
+  sake_vector_erase_range(vec1, 3, 13);
+  for (int i = 0; i < 10; i++)
+  {
+    ck_assert_int_eq(vec1[i], a[i]);
+  }
+  
+  sake_vector_free(vec1);
+}
+END_TEST
+
 START_TEST(check_vector_copy)
 {
   int32_t a[10] = {1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249};
@@ -489,6 +537,8 @@ Suite *check_sake_suite(void)
   tc_core_vector = tcase_create("CheckVector");
   tcase_add_test(tc_core_vector, check_vector_new_static);
   tcase_add_test(tc_core_vector, check_vector_new_dynamic);
+  tcase_add_test(tc_core_vector, check_vector_insert);
+  tcase_add_test(tc_core_vector, check_vector_erase);
   tcase_add_test(tc_core_vector, check_vector_copy);
   tcase_add_test(tc_core_array, check_vector_heapsort);
   tcase_add_test(tc_core_array, check_vector_quicksort);
