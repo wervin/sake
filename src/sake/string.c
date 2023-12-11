@@ -14,10 +14,14 @@
 
 #define STRING_META_SIZE                    (2 * sizeof(uint32_t))
 
-#define AT(base, i) (((uint8_t *) (base)) + (i))
+#define AT(base, i) ((char *) ((uint8_t *) (base)) + (i))
 
-static uint32_t _next_pow2(uint32_t v);
-static inline void _set(char *a, const char *b, uint32_t size);
+static sake_string _grow(sake_string string, uint32_t size);
+static uint32_t _raw_index(sake_string string, uint32_t index);
+
+static inline uint32_t _next_pow2(uint32_t v);
+static inline uint32_t _utf8_from_char(const char *data);
+static inline uint32_t _utf8_length(uint8_t utf8);
 
 sake_string sake_string_new(const char *string)
 {
@@ -28,11 +32,12 @@ sake_string sake_string_new(const char *string)
     capacity = _next_pow2(length + 1);
     size = STRING_META_SIZE + capacity;
     base = malloc(size);
-    SET_SIZE(base, length + 1);
+    if (!base)
+        return NULL;
+    SET_SIZE(base, length);
     SET_CAPACITY(base, capacity);
 
-    if (length)
-        _set(GET_DATA_PTR(base), string, length);
+    memcpy(GET_DATA_PTR(base), string, length);
     GET_DATA_PTR(base)[length] = '\0';
 
     return GET_DATA_PTR(base);
@@ -46,7 +51,127 @@ void sake_string_free(sake_string string)
     free(base);
 }
 
-static uint32_t _next_pow2(uint32_t v)
+uint32_t sake_string_raw_size(sake_string string)
+{
+    return GET_SIZE(GET_BASE_PTR(string));
+}
+
+uint32_t sake_string_utf8_size(sake_string string)
+{
+    uint32_t raw_size = GET_SIZE(GET_BASE_PTR(string));
+    uint32_t utf8_size = 0;
+    uint32_t i = 0;
+    while (i < raw_size)
+    {
+        i += _utf8_length(*AT(string, i));
+        utf8_size++;
+    }
+    return utf8_size;
+}
+
+bool sake_string_empty(sake_string string)
+{
+    return GET_SIZE(GET_BASE_PTR(string)) == 0;
+}
+
+uint32_t sake_string_at(sake_string string, uint32_t index)
+{
+    uint32_t raw_size = GET_SIZE(GET_BASE_PTR(string));
+    uint32_t position = 0;
+    uint32_t i = 0;
+    while (i < raw_size && position != index)
+    {
+        i += _utf8_length(*AT(string, i));
+        position++;
+    }
+
+    return _utf8_from_char(AT(string, i));
+}
+
+sake_string sake_string_push_back(sake_string string, const char *data)
+{
+    uint32_t capacity, size, length;
+
+    length = strlen(data);
+
+    capacity = GET_CAPACITY(GET_BASE_PTR(string));
+    size = GET_SIZE(GET_BASE_PTR(string));
+
+    if (capacity < (size + length))
+    {
+        string = _grow(string, size + length);
+        if (!string)
+            return NULL;
+    }
+
+    /* concatenate */
+    memcpy(AT(string, size), data, length);
+    SET_SIZE(GET_BASE_PTR(string), size + length);
+
+    return string;
+}
+
+void sake_string_pop_back(sake_string string)
+{
+    uint32_t utf8_size, index;
+    utf8_size = sake_string_utf8_size(string);
+    index = _raw_index(string, utf8_size - 1);
+    string[index] = '\0';
+    SET_SIZE(GET_BASE_PTR(string), index);
+}
+
+// void sake_string_erase(sake_string string, uint32_t index)
+// {
+
+// }
+
+// void sake_string_erase_range(sake_string string, uint32_t from, uint32_t to)
+// {
+
+// }
+
+// sake_string sake_string_insert_range(sake_string string, uint32_t index, uint32_t *data, uint32_t n)
+// {
+
+// }
+
+// sake_string sake_string_copy(sake_string from, sake_string to)
+// {
+
+// }
+
+static sake_string _grow(sake_string string, uint32_t size)
+{
+    uint32_t new_capacity, new_size;
+    void *base;
+
+    new_capacity = _next_pow2(size);
+    new_size = STRING_META_SIZE + new_capacity;
+
+    base = GET_BASE_PTR(string);
+    base = realloc(base, new_size);
+    if (!base)
+        return NULL;
+
+    SET_CAPACITY(base, new_capacity);
+    return GET_DATA_PTR(base);
+}
+
+static uint32_t _raw_index(sake_string string, uint32_t index)
+{
+    uint32_t raw_size = GET_SIZE(GET_BASE_PTR(string));
+    uint32_t position = 0;
+    uint32_t i = 0;
+    while (i < raw_size && position != index)
+    {
+        i += _utf8_length(*AT(string, i));
+        position++;
+    }
+
+    return i;
+}
+
+static inline uint32_t _next_pow2(uint32_t v)
 {
     v--;
     v |= v >> 1;
@@ -59,10 +184,20 @@ static uint32_t _next_pow2(uint32_t v)
     return v;
 }
 
-static inline void _set(char *a, const char *b, uint32_t size)
+static inline uint32_t _utf8_length(uint8_t utf8)
 {
-    do
-    {
-        *a++ = *b++;
-    } while (--size > 0);
+    if ((utf8 & 0x80) == 0x00) return 1;
+    if ((utf8 & 0xE0) == 0xC0) return 2;
+    if ((utf8 & 0xF0) == 0xE0) return 3;
+    if ((utf8 & 0xF8) == 0xF0) return 4;
+    return 0;
+}
+
+static inline uint32_t _utf8_from_char(const char *data)
+{
+    if ((data[0] & 0x80) == 0x00) return ((uint8_t) data[0]);
+    if ((data[0] & 0xE0) == 0xC0) return ((uint8_t) data[0]) | (((uint8_t) data[1]) << 8);
+    if ((data[0] & 0xF0) == 0xE0) return ((uint8_t) data[0]) | (((uint8_t) data[1]) << 8) | (((uint8_t) data[2]) << 16);
+    if ((data[0] & 0xF8) == 0xF0) return ((uint8_t) data[0]) | (((uint8_t) data[1]) << 8) | (((uint8_t) data[2]) << 16) | (((uint8_t) data[3]) << 24);
+    return 0;
 }
