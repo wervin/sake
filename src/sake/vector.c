@@ -4,6 +4,7 @@
 #include "sake/vector.h"
 #include "sake/array.h"
 #include "sake/macro.h"
+#include "sake/utils.h"
 
 #define GET_DESTRUCTOR(base) (*((sake_vector_destructor *)((uint8_t *)(base))))
 #define GET_ELT_SIZE(base) (*((uint32_t *)((uint8_t *)(base) + sizeof(sake_vector_destructor))))
@@ -23,7 +24,6 @@
 
 static sake_vector *_grow(sake_vector *vec, uint32_t size);
 
-static inline uint32_t _next_pow2(uint32_t v);
 static inline void _set(void *a, void *b, uint32_t size);
 
 sake_vector *sake_vector_new(uint32_t elt_size, sake_vector_destructor destructor)
@@ -260,7 +260,7 @@ static sake_vector *_grow(sake_vector *vec, uint32_t size)
 
     elt_size = GET_ELT_SIZE(GET_BASE_PTR(vec));
 
-    new_capacity = _next_pow2(size);
+    new_capacity = sake_utils_next_pow2(size);
     new_size = VECTOR_META_SIZE + elt_size * new_capacity;
 
     base = GET_BASE_PTR(vec);
@@ -270,19 +270,6 @@ static sake_vector *_grow(sake_vector *vec, uint32_t size)
 
     SET_CAPACITY(base, new_capacity);
     return GET_DATA_PTR(base);
-}
-
-static inline uint32_t _next_pow2(uint32_t v)
-{
-    v--;
-    v |= v >> 1;
-    v |= v >> 2;
-    v |= v >> 4;
-    v |= v >> 8;
-    v |= v >> 16;
-    v++;
-
-    return v;
 }
 
 static inline void _set(void *a, void *b, uint32_t size)

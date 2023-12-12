@@ -3,6 +3,7 @@
 
 #include "sake/string.h"
 #include "sake/macro.h"
+#include "sake/utils.h"
 
 #define GET_SIZE(base)                      (*((uint32_t *) ((uint8_t *) (base))))
 #define GET_CAPACITY(base)                  (*((uint32_t *) ((uint8_t *) (base) + sizeof(uint32_t))))
@@ -19,17 +20,13 @@
 static sake_string _grow(sake_string string, uint32_t size);
 static uint32_t _raw_index(sake_string string, uint32_t index);
 
-static inline uint32_t _next_pow2(uint32_t v);
-static inline uint32_t _utf8_from_char(const char *data);
-static inline uint32_t _utf8_length(uint8_t utf8);
-
 sake_string sake_string_new(const char *string)
 {
     uint32_t length, size, capacity;
     sake_string base;
 
     length = strlen(string);
-    capacity = _next_pow2(length + 1);
+    capacity = sake_utils_next_pow2(length + 1);
     size = STRING_META_SIZE + capacity;
     base = malloc(size);
     if (!base)
@@ -49,7 +46,7 @@ sake_string sake_string_new_range(const char *begin, const char *end)
     sake_string base;
 
     length = *end - *begin;
-    capacity = _next_pow2(length + 1);
+    capacity = sake_utils_next_pow2(length + 1);
     size = STRING_META_SIZE + capacity;
     base = malloc(size);
     if (!base)
@@ -83,7 +80,7 @@ uint32_t sake_string_utf8_size(sake_string string)
     uint32_t i = 0;
     while (i < raw_size)
     {
-        i += _utf8_length(*AT(string, i));
+        i += sake_utils_utf8_length(*AT(string, i));
         utf8_size++;
     }
     return utf8_size;
@@ -101,11 +98,11 @@ uint32_t sake_string_at(sake_string string, uint32_t index)
     uint32_t i = 0;
     while (i < raw_size && position != index)
     {
-        i += _utf8_length(*AT(string, i));
+        i += sake_utils_utf8_length(*AT(string, i));
         position++;
     }
 
-    return _utf8_from_char(AT(string, i));
+    return sake_utils_utf8_from_char(AT(string, i));
 }
 
 sake_string sake_string_push_back(sake_string string, const char *data)
@@ -146,7 +143,7 @@ void sake_string_erase(sake_string string, uint32_t index)
     uint32_t utf8_size, raw_index, raw_size;
     raw_size = GET_SIZE(GET_BASE_PTR(string));
     raw_index = _raw_index(string, index);
-    utf8_size = _utf8_length(string[raw_index]);
+    utf8_size = sake_utils_utf8_length(string[raw_index]);
     memmove(AT(string, raw_index), AT(string, raw_index + utf8_size), raw_size - (raw_index + utf8_size));
     string[raw_size - utf8_size] = '\0';
     SET_SIZE(GET_BASE_PTR(string), raw_size - utf8_size);
@@ -195,7 +192,7 @@ static sake_string _grow(sake_string string, uint32_t size)
     uint32_t new_capacity, new_size;
     void *base;
 
-    new_capacity = _next_pow2(size);
+    new_capacity = sake_utils_next_pow2(size);
     new_size = STRING_META_SIZE + new_capacity;
 
     base = GET_BASE_PTR(string);
@@ -214,40 +211,9 @@ static uint32_t _raw_index(sake_string string, uint32_t index)
     uint32_t i = 0;
     while (i < raw_size && position != index)
     {
-        i += _utf8_length(*AT(string, i));
+        i += sake_utils_utf8_length(*AT(string, i));
         position++;
     }
 
     return i;
-}
-
-static inline uint32_t _next_pow2(uint32_t v)
-{
-    v--;
-    v |= v >> 1;
-    v |= v >> 2;
-    v |= v >> 4;
-    v |= v >> 8;
-    v |= v >> 16;
-    v++;
-
-    return v;
-}
-
-static inline uint32_t _utf8_length(uint8_t utf8)
-{
-    if ((utf8 & 0x80) == 0x00) return 1;
-    if ((utf8 & 0xE0) == 0xC0) return 2;
-    if ((utf8 & 0xF0) == 0xE0) return 3;
-    if ((utf8 & 0xF8) == 0xF0) return 4;
-    return 0;
-}
-
-static inline uint32_t _utf8_from_char(const char *data)
-{
-    if ((data[0] & 0x80) == 0x00) return ((uint8_t) data[0]);
-    if ((data[0] & 0xE0) == 0xC0) return ((uint8_t) data[0]) | (((uint8_t) data[1]) << 8);
-    if ((data[0] & 0xF0) == 0xE0) return ((uint8_t) data[0]) | (((uint8_t) data[1]) << 8) | (((uint8_t) data[2]) << 16);
-    if ((data[0] & 0xF8) == 0xF0) return ((uint8_t) data[0]) | (((uint8_t) data[1]) << 8) | (((uint8_t) data[2]) << 16) | (((uint8_t) data[3]) << 24);
-    return 0;
 }
