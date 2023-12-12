@@ -43,6 +43,26 @@ sake_string sake_string_new(const char *string)
     return GET_DATA_PTR(base);
 }
 
+sake_string sake_string_new_range(const char *begin, const char *end)
+{
+    uint32_t length, size, capacity;
+    sake_string base;
+
+    length = *end - *begin;
+    capacity = _next_pow2(length + 1);
+    size = STRING_META_SIZE + capacity;
+    base = malloc(size);
+    if (!base)
+        return NULL;
+    SET_SIZE(base, length);
+    SET_CAPACITY(base, capacity);
+
+    memcpy(GET_DATA_PTR(base), begin, length);
+    GET_DATA_PTR(base)[length] = '\0';
+
+    return GET_DATA_PTR(base);
+}
+
 void sake_string_free(sake_string string)
 {   
     void * base;
