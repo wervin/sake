@@ -131,8 +131,8 @@ void sake_vector_erase_range(sake_vector *vec, uint32_t from, uint32_t to)
             destructor(*(void **)AT(vec, i, elt_size));
 
     size = GET_SIZE(GET_BASE_PTR(vec));
-    memmove(AT(vec, from, elt_size), AT(vec, to, elt_size), elt_size * (to - from));
-    SET_SIZE(GET_BASE_PTR(vec), size - 1);
+    memmove(AT(vec, from, elt_size), AT(vec, to, elt_size), elt_size * (size - to));
+    SET_SIZE(GET_BASE_PTR(vec), size - (to - from));
 }
 
 sake_vector *sake_vector_insert(sake_vector *vec, uint32_t index, void *elt)

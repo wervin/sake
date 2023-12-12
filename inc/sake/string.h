@@ -23,6 +23,5 @@ void sake_string_pop_back(sake_string string);
 void sake_string_erase(sake_string string, uint32_t index);
 void sake_string_erase_range(sake_string string, uint32_t from, uint32_t to);
 sake_string sake_string_insert(sake_string string, uint32_t index, const char *data);
-sake_string sake_string_copy(sake_string from, sake_string to);
 
 #endif /* SAKE_STRING_H */

@@ -106,6 +106,7 @@ sake_string sake_string_push_back(sake_string string, const char *data)
 
     /* concatenate */
     memcpy(AT(string, size), data, length);
+    string[size + length] = '\0';
     SET_SIZE(GET_BASE_PTR(string), size + length);
 
     return string;
@@ -120,25 +121,54 @@ void sake_string_pop_back(sake_string string)
     SET_SIZE(GET_BASE_PTR(string), index);
 }
 
-// void sake_string_erase(sake_string string, uint32_t index)
-// {
+void sake_string_erase(sake_string string, uint32_t index)
+{
+    uint32_t utf8_size, raw_index, raw_size;
+    raw_size = GET_SIZE(GET_BASE_PTR(string));
+    raw_index = _raw_index(string, index);
+    utf8_size = _utf8_length(string[raw_index]);
+    memmove(AT(string, raw_index), AT(string, raw_index + utf8_size), raw_size - (raw_index + utf8_size));
+    string[raw_size - utf8_size] = '\0';
+    SET_SIZE(GET_BASE_PTR(string), raw_size - utf8_size);
+}
 
-// }
+void sake_string_erase_range(sake_string string, uint32_t from, uint32_t to)
+{
+    uint32_t range, from_raw_index, to_raw_index, raw_size;
+    raw_size = GET_SIZE(GET_BASE_PTR(string));
+    from_raw_index = _raw_index(string, from);
+    to_raw_index = _raw_index(string, to);
+    range = to_raw_index - from_raw_index;
+    memmove(AT(string, from_raw_index), AT(string, to_raw_index), raw_size - to_raw_index);
+    string[raw_size - range] = '\0';
+    SET_SIZE(GET_BASE_PTR(string), raw_size - range);
+}
 
-// void sake_string_erase_range(sake_string string, uint32_t from, uint32_t to)
-// {
+sake_string sake_string_insert(sake_string string, uint32_t index, const char *data)
+{
+    uint32_t capacity, size, length, raw_index;
 
-// }
+    length = strlen(data);
 
-// sake_string sake_string_insert_range(sake_string string, uint32_t index, uint32_t *data, uint32_t n)
-// {
+    capacity = GET_CAPACITY(GET_BASE_PTR(string));
+    size = GET_SIZE(GET_BASE_PTR(string));
 
-// }
+    if (capacity < (size + length))
+    {
+        string = _grow(string, size + length);
+        if (!string)
+            return NULL;
+    }
 
-// sake_string sake_string_copy(sake_string from, sake_string to)
-// {
+    raw_index = _raw_index(string, index);
 
-// }
+    memmove(AT(string, raw_index + length), AT(string, raw_index), size - raw_index);
+    memcpy(AT(string, raw_index), data, length);
+    string[size + length] = '\0';
+    SET_SIZE(GET_BASE_PTR(string), size + length);
+    
+    return string;
+}
 
 static sake_string _grow(sake_string string, uint32_t size)
 {

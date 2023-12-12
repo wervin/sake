@@ -193,6 +193,118 @@ START_TEST(check_string_pop_back)
 }
 END_TEST
 
+START_TEST(check_string_erase)
+{
+  {
+    char test[] = "test\né퉡𑜴0a";
+    sake_string s = sake_string_new(test);
+    ck_assert_str_eq(s, test);
+    ck_assert_uint_eq(sake_string_raw_size(s), 16);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 10);
+
+    sake_string_erase(s, 4);
+    ck_assert_str_eq(s, "testé퉡𑜴0a");
+    ck_assert_uint_eq(sake_string_raw_size(s), 15);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 9);
+
+    sake_string_erase(s, 4);
+    ck_assert_str_eq(s, "test퉡𑜴0a");
+    ck_assert_uint_eq(sake_string_raw_size(s), 13);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 8);
+
+    sake_string_erase(s, 4);
+    ck_assert_str_eq(s, "test𑜴0a");
+    ck_assert_uint_eq(sake_string_raw_size(s), 10);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 7);
+
+    sake_string_erase(s, 4);
+    ck_assert_str_eq(s, "test0a");
+    ck_assert_uint_eq(sake_string_raw_size(s), 6);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 6);
+
+    sake_string_erase(s, 4);
+    ck_assert_str_eq(s, "testa");
+    ck_assert_uint_eq(sake_string_raw_size(s), 5);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 5);
+
+    sake_string_erase(s, 4);
+    ck_assert_str_eq(s, "test");
+    ck_assert_uint_eq(sake_string_raw_size(s), 4);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 4);
+
+    sake_string_free(s);
+  }
+}
+END_TEST
+
+START_TEST(check_string_erase_range)
+{
+  {
+    char test[] = "test\né퉡𑜴0a";
+    sake_string s = sake_string_new(test);
+    ck_assert_str_eq(s, test);
+    ck_assert_uint_eq(sake_string_raw_size(s), 16);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 10);
+
+    sake_string_erase_range(s, 4, 8);
+    ck_assert_str_eq(s, "test0a");
+    ck_assert_uint_eq(sake_string_raw_size(s), 6);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 6);
+
+    sake_string_free(s);
+  }
+
+  {
+    char test[] = "test\né퉡𑜴0a";
+    sake_string s = sake_string_new(test);
+    ck_assert_str_eq(s, test);
+    ck_assert_uint_eq(sake_string_raw_size(s), 16);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 10);
+
+    sake_string_erase_range(s, 1, 9);
+    ck_assert_str_eq(s, "ta");
+    ck_assert_uint_eq(sake_string_raw_size(s), 2);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 2);
+
+    sake_string_free(s);
+  }
+
+  {
+    char test[] = "test\né퉡𑜴0a";
+    sake_string s = sake_string_new(test);
+    ck_assert_str_eq(s, test);
+    ck_assert_uint_eq(sake_string_raw_size(s), 16);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 10);
+
+    sake_string_erase_range(s, 0, 5);
+    ck_assert_str_eq(s, "é퉡𑜴0a");
+    ck_assert_uint_eq(sake_string_raw_size(s), 11);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 5);
+
+    sake_string_free(s);
+  }
+}
+END_TEST
+
+START_TEST(check_string_insert)
+{
+  {
+    char test[] = "test";
+    sake_string s = sake_string_new(test);
+    ck_assert_str_eq(s, test);
+    ck_assert_uint_eq(sake_string_raw_size(s), 4);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 4);
+
+    s = sake_string_insert(s, 1, "\né퉡𑜴0a");
+    ck_assert_str_eq(s, "t\né퉡𑜴0aest");
+    ck_assert_uint_eq(sake_string_raw_size(s), 16);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 10);
+
+    sake_string_free(s);
+  }
+}
+END_TEST
+
 Suite *check_sake_suite(void)
 {
   Suite * s;
@@ -218,6 +330,18 @@ Suite *check_sake_suite(void)
 
   test = tcase_create("CheckStringPopBack");
   tcase_add_test(test, check_string_pop_back);
+  suite_add_tcase(s, test);
+
+  test = tcase_create("CheckStringErase");
+  tcase_add_test(test, check_string_erase);
+  suite_add_tcase(s, test);
+
+  test = tcase_create("CheckStringEraseRange");
+  tcase_add_test(test, check_string_erase_range);
+  suite_add_tcase(s, test);
+
+  test = tcase_create("CheckStringInsert");
+  tcase_add_test(test, check_string_insert);
   suite_add_tcase(s, test);
 
   return s;

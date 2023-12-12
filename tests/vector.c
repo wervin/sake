@@ -136,6 +136,7 @@ START_TEST(check_vector_insert)
     {
         ck_assert_int_eq(vec1[i], b[i]);
     }
+    ck_assert_int_eq(sake_vector_size(vec1), 20);
 
     sake_vector_free(vec1);
 }
@@ -145,6 +146,7 @@ START_TEST(check_vector_erase)
 {
     int32_t b[20] = {1, 54, 29, 1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249, 51, 1249, 2, 4, 4124, 9, 1249};
     int32_t a[10] = {1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249};
+    int32_t c[8] = {29, 51, 1249, 2, 4, 4124, 9, 1249};
 
     int32_t *vec1 = sake_vector_new(sizeof(int32_t), NULL);
 
@@ -160,6 +162,14 @@ START_TEST(check_vector_erase)
     {
         ck_assert_int_eq(vec1[i], a[i]);
     }
+    ck_assert_int_eq(sake_vector_size(vec1), 10);
+
+    sake_vector_erase_range(vec1, 0, 2);
+    for (int i = 0; i < 8; i++)
+    {
+        ck_assert_int_eq(vec1[i], c[i]);
+    }
+    ck_assert_int_eq(sake_vector_size(vec1), 8);
 
     sake_vector_free(vec1);
 }
