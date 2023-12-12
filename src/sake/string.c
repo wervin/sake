@@ -45,7 +45,7 @@ sake_string sake_string_new_range(const char *begin, const char *end)
     uint32_t length, size, capacity;
     sake_string base;
 
-    length = *end - *begin;
+    length = end - begin;
     capacity = sake_utils_next_pow2(length + 1);
     size = STRING_META_SIZE + capacity;
     base = malloc(size);

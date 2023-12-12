@@ -33,6 +33,18 @@ START_TEST(check_string_new)
     ck_assert_str_eq(s, "eazep");
     sake_string_free(s);
   }
+  {
+    char test[] = "eazepjazr^pu)_&)é_'&é)u&é'lazbn&éàu&)";
+    sake_string s = sake_string_new_range(test, test + 1);
+    ck_assert_str_eq(s, "e");
+    sake_string_free(s);
+  }
+  {
+    char test[] = "eazepjazr^pu)_&)é_'&é)u&é'lazbn&éàu&)";
+    sake_string s = sake_string_new_range(test, test);
+    ck_assert_str_eq(s, "");
+    sake_string_free(s);
+  }
 }
 END_TEST
 
