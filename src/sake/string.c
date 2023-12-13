@@ -68,6 +68,11 @@ void sake_string_free(sake_string string)
     free(base);
 }
 
+uint32_t sake_string_capacity(sake_string string)
+{
+    return GET_CAPACITY(GET_BASE_PTR(string));
+}
+
 uint32_t sake_string_raw_size(sake_string string)
 {
     return GET_SIZE(GET_BASE_PTR(string));
@@ -114,9 +119,9 @@ sake_string sake_string_push_back(sake_string string, const char *data)
     capacity = GET_CAPACITY(GET_BASE_PTR(string));
     size = GET_SIZE(GET_BASE_PTR(string));
 
-    if (capacity < (size + length))
+    if (capacity < (size + length + 1))
     {
-        string = _grow(string, size + length);
+        string = _grow(string, size + length + 1);
         if (!string)
             return NULL;
     }
@@ -170,7 +175,7 @@ sake_string sake_string_insert(sake_string string, uint32_t index, const char *d
     capacity = GET_CAPACITY(GET_BASE_PTR(string));
     size = GET_SIZE(GET_BASE_PTR(string));
 
-    if (capacity < (size + length))
+    if (capacity < (size + length + 1))
     {
         string = _grow(string, size + length);
         if (!string)

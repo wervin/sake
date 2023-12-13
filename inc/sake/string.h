@@ -15,6 +15,7 @@ typedef char *sake_string;
 sake_string sake_string_new(const char *string);
 sake_string sake_string_new_range(const char *begin, const char *end);
 void sake_string_free(sake_string string);
+uint32_t sake_string_capacity(sake_string string);
 uint32_t sake_string_raw_size(sake_string string);
 uint32_t sake_string_utf8_size(sake_string string);
 bool sake_string_empty(sake_string string);

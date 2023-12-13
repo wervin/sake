@@ -164,6 +164,23 @@ START_TEST(check_string_push_back)
     
     sake_string_free(s);
   }
+
+  {
+    char test[] = "test";
+    sake_string s = sake_string_new(test);
+    ck_assert_str_eq(s, test);
+    ck_assert_uint_eq(sake_string_raw_size(s), 4);
+    ck_assert_uint_eq(sake_string_utf8_size(s), 4);
+
+    for (uint32_t i = 0; i < 69; i++)
+    {
+      s = sake_string_push_back(s, "a");
+      ck_assert_uint_eq(sake_string_raw_size(s), 5 + i);
+      ck_assert_uint_eq(sake_string_utf8_size(s), 5 + i);
+    }
+
+    sake_string_free(s);
+  }
 }
 END_TEST
 

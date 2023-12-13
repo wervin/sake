@@ -117,6 +117,20 @@ START_TEST(check_vector_new_dynamic)
 }
 END_TEST
 
+START_TEST(check_vector_push_back)
+{
+    int32_t *vec1 = sake_vector_new(sizeof(int32_t), NULL);
+
+    for (int i = 0; i < 69; i++)
+    {
+        vec1 = sake_vector_push_back(vec1, &i);
+        ck_assert_uint_eq(sake_vector_size(vec1), 1 + i);
+    }
+
+    sake_vector_free(vec1);
+}
+END_TEST
+
 START_TEST(check_vector_insert)
 {
     int32_t a[10] = {1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249};
@@ -321,6 +335,10 @@ Suite *check_sake_suite(void)
 
     test = tcase_create("CheckVectorNewDynamic");
     tcase_add_test(test, check_vector_new_dynamic);
+    suite_add_tcase(s, test);
+
+    test = tcase_create("CheckVectorPushBack");
+    tcase_add_test(test, check_vector_push_back);
     suite_add_tcase(s, test);
 
     test = tcase_create("CheckVectorInsert");
