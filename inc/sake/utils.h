@@ -34,4 +34,13 @@ static inline uint32_t sake_utils_utf8_from_char(const char *data)
     return 0;
 }
 
+static inline uint32_t sake_utils_utf8_from_code_point(const uint8_t *data)
+{
+    if ((data[0] & 0x80) == 0x00) return (data[0]);
+    if ((data[0] & 0xE0) == 0xC0) return ((data[0] & 0x1F) << 6) | (data[1] & 0x3F);
+    if ((data[0] & 0xF0) == 0xE0) return ((data[0] & 0x0F) << 12) | ((data[1] & 0x3F) << 6) | (data[2] & 0x3F);
+    if ((data[0] & 0xF8) == 0xF0) return ((data[0] & 0x07) << 18) | ((data[1] & 0x3F) << 12) | ((data[2] & 0x3F) << 6) | (data[3] & 0x3F);
+    return 0;
+}
+
 #endif /* SAKE_UTILS_H */
