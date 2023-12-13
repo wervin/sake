@@ -177,7 +177,7 @@ sake_string sake_string_insert(sake_string string, uint32_t index, const char *d
 
     if (capacity < (size + length + 1))
     {
-        string = _grow(string, size + length);
+        string = _grow(string, size + length + 1);
         if (!string)
             return NULL;
     }
