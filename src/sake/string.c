@@ -17,32 +17,12 @@
 
 static sake_string _grow(sake_string string, uint32_t size);
 
-sake_string sake_string_new(const char *string)
+sake_string sake_string_new(const char *begin, const char *end)
 {
     uint32_t length, size, capacity;
     sake_string base;
 
-    length = strlen(string);
-    capacity = sake_utils_next_pow2(length + 1);
-    size = STRING_META_SIZE + capacity;
-    base = malloc(size);
-    if (!base)
-        return NULL;
-    SET_SIZE(base, length);
-    SET_CAPACITY(base, capacity);
-
-    memcpy(GET_DATA_PTR(base), string, length);
-    GET_DATA_PTR(base)[length] = '\0';
-
-    return GET_DATA_PTR(base);
-}
-
-sake_string sake_string_new_range(const char *begin, const char *end)
-{
-    uint32_t length, size, capacity;
-    sake_string base;
-
-    length = end - begin;
+    length = end ? end - begin : (uint32_t) strlen(begin);
     capacity = sake_utils_next_pow2(length + 1);
     size = STRING_META_SIZE + capacity;
     base = malloc(size);
@@ -93,11 +73,11 @@ bool sake_string_empty(sake_string string)
     return GET_SIZE(GET_BASE_PTR(string)) == 0;
 }
 
-sake_string sake_string_push_back(sake_string string, const char *data)
+sake_string sake_string_push_back(sake_string string, const char *begin, const char *end)
 {
     uint32_t capacity, size, length;
 
-    length = strlen(data);
+    length = end ? end - begin : (uint32_t) strlen(begin);
 
     capacity = GET_CAPACITY(GET_BASE_PTR(string));
     size = GET_SIZE(GET_BASE_PTR(string));
@@ -110,7 +90,7 @@ sake_string sake_string_push_back(sake_string string, const char *data)
     }
 
     /* concatenate */
-    memcpy(string + size, data, length);
+    memcpy(string + size, begin, length);
     string[size + length] = '\0';
     SET_SIZE(GET_BASE_PTR(string), size + length);
 
@@ -146,11 +126,11 @@ void sake_string_erase_range(sake_string string, uint32_t from, uint32_t to)
     SET_SIZE(GET_BASE_PTR(string), raw_size - range);
 }
 
-sake_string sake_string_insert(sake_string string, uint32_t index, const char *data)
+sake_string sake_string_insert(sake_string string, uint32_t index, const char *begin, const char *end)
 {
     uint32_t capacity, size, length;
 
-    length = strlen(data);
+    length = end ? end - begin : (uint32_t) strlen(begin);
 
     capacity = GET_CAPACITY(GET_BASE_PTR(string));
     size = GET_SIZE(GET_BASE_PTR(string));
@@ -163,7 +143,7 @@ sake_string sake_string_insert(sake_string string, uint32_t index, const char *d
     }
 
     memmove(string + index + length, string + index, size - index);
-    memcpy(string + index, data, length);
+    memcpy(string + index, begin, length);
     string[size + length] = '\0';
     SET_SIZE(GET_BASE_PTR(string), size + length);
     

@@ -8,40 +8,40 @@ START_TEST(check_string_new)
 {
   {
     char test[] = "test\n";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     sake_string_free(s);
   }
 
   {
     char test[] = "azùjfafùzeîghez$aruewjwf,ùqsd,az$epojazenamflkabznkq:bfwxklfjzapeo";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     sake_string_free(s);
   }
 
   {
     char test[] = "eazepjazr^pu)_&)é_'&é)u&é'lazbn&éàu&)";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     sake_string_free(s);
   }
 
   {
     char test[] = "eazepjazr^pu)_&)é_'&é)u&é'lazbn&éàu&)";
-    sake_string s = sake_string_new_range(test, test + 5);
+    sake_string s = sake_string_new(test, test + 5);
     ck_assert_str_eq(s, "eazep");
     sake_string_free(s);
   }
   {
     char test[] = "eazepjazr^pu)_&)é_'&é)u&é'lazbn&éàu&)";
-    sake_string s = sake_string_new_range(test, test + 1);
+    sake_string s = sake_string_new(test, test + 1);
     ck_assert_str_eq(s, "e");
     sake_string_free(s);
   }
   {
     char test[] = "eazepjazr^pu)_&)é_'&é)u&é'lazbn&éàu&)";
-    sake_string s = sake_string_new_range(test, test);
+    sake_string s = sake_string_new(test, test);
     ck_assert_str_eq(s, "");
     sake_string_free(s);
   }
@@ -52,7 +52,7 @@ START_TEST(check_string_size)
 {
   {
     char test[] = "test\n";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 5);
     ck_assert_uint_eq(sake_string_utf8_size(s), 5);
@@ -61,7 +61,7 @@ START_TEST(check_string_size)
 
   {
     char test[] = "éé";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 4);
     ck_assert_uint_eq(sake_string_utf8_size(s), 2);
@@ -70,7 +70,7 @@ START_TEST(check_string_size)
 
   {
     char test[] = "邹邹";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 6);
     ck_assert_uint_eq(sake_string_utf8_size(s), 2);
@@ -79,7 +79,7 @@ START_TEST(check_string_size)
 
   {
     char test[] = "𑜴𑜴";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 8);
     ck_assert_uint_eq(sake_string_utf8_size(s), 2);
@@ -88,7 +88,7 @@ START_TEST(check_string_size)
 
   {
     char test[] = "ⶃڪ]'/͵6٦і⻢۹뛱%=퉡▟qA G¦ZV̛͌Ĩ݄ާ̟썋:Ⱄⶃڪ]'/͵6٦і⻢۹뛱%=퉡▟qA G¦ZV̛͌Ĩ݄ާ̟썋:Ⱄ";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 116);
     ck_assert_uint_eq(sake_string_utf8_size(s), 64);
@@ -97,7 +97,7 @@ START_TEST(check_string_size)
 
   {
     char test[] = "";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 0);
     ck_assert_uint_eq(sake_string_utf8_size(s), 0);
@@ -110,7 +110,7 @@ START_TEST(check_string_at)
 {
   {
     char test[] = "test\né邹𑜴é";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 16);
     ck_assert_uint_eq(sake_string_utf8_size(s), 9);
@@ -143,22 +143,22 @@ START_TEST(check_string_push_back)
 {
   {
     char test[] = "test\n";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 5);
     ck_assert_uint_eq(sake_string_utf8_size(s), 5);
 
-    s = sake_string_push_back(s, "q");
+    s = sake_string_push_back(s, "q", NULL);
     ck_assert_str_eq(s, "test\nq");
     ck_assert_uint_eq(sake_string_raw_size(s), 6);
     ck_assert_uint_eq(sake_string_utf8_size(s), 6);
 
-    s = sake_string_push_back(s, "퉡");
+    s = sake_string_push_back(s, "퉡", NULL);
     ck_assert_str_eq(s, "test\nq퉡");
     ck_assert_uint_eq(sake_string_raw_size(s), 9);
     ck_assert_uint_eq(sake_string_utf8_size(s), 7);
 
-    s = sake_string_push_back(s, "ⶃڪ]'/͵6٦і⻢۹뛱%=퉡▟qA G¦ZV̛͌Ĩ݄ާ̟썋:Ⱄⶃڪ]'/͵6٦і⻢۹뛱%=퉡▟qA G¦ZV̛͌Ĩ݄ާ̟썋:Ⱄ");
+    s = sake_string_push_back(s, "ⶃڪ]'/͵6٦і⻢۹뛱%=퉡▟qA G¦ZV̛͌Ĩ݄ާ̟썋:Ⱄⶃڪ]'/͵6٦і⻢۹뛱%=퉡▟qA G¦ZV̛͌Ĩ݄ާ̟썋:Ⱄ", NULL);
     ck_assert_str_eq(s, "test\nq퉡ⶃڪ]'/͵6٦і⻢۹뛱%=퉡▟qA G¦ZV̛͌Ĩ݄ާ̟썋:Ⱄⶃڪ]'/͵6٦і⻢۹뛱%=퉡▟qA G¦ZV̛͌Ĩ݄ާ̟썋:Ⱄ");
     ck_assert_uint_eq(sake_string_raw_size(s), 125);
     ck_assert_uint_eq(sake_string_utf8_size(s), 71);
@@ -168,14 +168,14 @@ START_TEST(check_string_push_back)
 
   {
     char test[] = "test";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 4);
     ck_assert_uint_eq(sake_string_utf8_size(s), 4);
 
     for (uint32_t i = 0; i < 69; i++)
     {
-      s = sake_string_push_back(s, "a");
+      s = sake_string_push_back(s, "a", NULL);
       ck_assert_uint_eq(sake_string_raw_size(s), 5 + i);
       ck_assert_uint_eq(sake_string_utf8_size(s), 5 + i);
     }
@@ -190,7 +190,7 @@ START_TEST(check_string_pop_back)
 {
   {
     char test[] = "test\né퉡𑜴0a";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 16);
     ck_assert_uint_eq(sake_string_utf8_size(s), 10);
@@ -234,7 +234,7 @@ START_TEST(check_string_erase)
 {
   {
     char test[] = "test\né퉡𑜴0a";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 16);
     ck_assert_uint_eq(sake_string_utf8_size(s), 10);
@@ -278,7 +278,7 @@ START_TEST(check_string_erase_range)
 {
   {
     char test[] = "test\né퉡𑜴0a";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 16);
     ck_assert_uint_eq(sake_string_utf8_size(s), 10);
@@ -295,7 +295,7 @@ START_TEST(check_string_erase_range)
 
   {
     char test[] = "test\né퉡𑜴0a";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 16);
     ck_assert_uint_eq(sake_string_utf8_size(s), 10);
@@ -312,7 +312,7 @@ START_TEST(check_string_erase_range)
 
   {
     char test[] = "test\né퉡𑜴0a";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 16);
     ck_assert_uint_eq(sake_string_utf8_size(s), 10);
@@ -333,12 +333,12 @@ START_TEST(check_string_insert)
 {
   {
     char test[] = "test";
-    sake_string s = sake_string_new(test);
+    sake_string s = sake_string_new(test, NULL);
     ck_assert_str_eq(s, test);
     ck_assert_uint_eq(sake_string_raw_size(s), 4);
     ck_assert_uint_eq(sake_string_utf8_size(s), 4);
 
-    s = sake_string_insert(s, 1, "\né퉡𑜴0a");
+    s = sake_string_insert(s, 1, "\né퉡𑜴0a", NULL);
     ck_assert_str_eq(s, "t\né퉡𑜴0aest");
     ck_assert_uint_eq(sake_string_raw_size(s), 16);
     ck_assert_uint_eq(sake_string_utf8_size(s), 10);
