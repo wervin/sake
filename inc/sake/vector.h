@@ -21,6 +21,7 @@ sake_vector *sake_vector_push_back(sake_vector *vec, void *elt);
 void sake_vector_free(sake_vector *vec);
 bool sake_vector_empty(sake_vector *vec);
 void sake_vector_erase(sake_vector *vec, uint32_t index);
+void sake_vector_clear(sake_vector *vec);
 void sake_vector_erase_range(sake_vector *vec, uint32_t from, uint32_t to);
 sake_vector *sake_vector_insert(sake_vector *vec, uint32_t index, void *elt);
 sake_vector *sake_vector_insert_range(sake_vector *vec, uint32_t index, void *elts, uint32_t n);

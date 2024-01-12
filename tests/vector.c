@@ -217,6 +217,29 @@ START_TEST(check_vector_copy)
 }
 END_TEST
 
+START_TEST(check_vector_clear)
+{
+    int32_t a[10] = {1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249};
+
+    int32_t *vec1 = sake_vector_new(sizeof(int32_t), NULL);
+
+    for (int i = 0; i < 10; i++)
+    {
+        vec1 = sake_vector_push_back(vec1, &a[i]);
+        ck_assert_int_eq(vec1[i], a[i]);
+        ck_assert_int_eq(sake_vector_size(vec1), i + 1);
+    }
+
+    sake_vector_clear(vec1);
+    ck_assert_int_eq(sake_vector_size(vec1), 0);
+    ck_assert_int_eq(sake_vector_capacity(vec1), 16);
+    for (int i = 0; i < 10; i++)
+        ck_assert_int_eq(vec1[i], 0);
+
+    sake_vector_free(vec1);
+}
+END_TEST
+
 START_TEST(check_vector_heapsort)
 {
     int32_t a[10] = {1, 54, 29, 51, 1249, 2, 4, 4124, 9, 1249};
@@ -351,6 +374,10 @@ Suite *check_sake_suite(void)
 
     test = tcase_create("CheckVectorCopy");
     tcase_add_test(test, check_vector_copy);
+    suite_add_tcase(s, test);
+
+    test = tcase_create("CheckVectorClear");
+    tcase_add_test(test, check_vector_clear);
     suite_add_tcase(s, test);
 
     test = tcase_create("CheckVectorHeapSort");

@@ -118,6 +118,29 @@ void sake_vector_erase(sake_vector *vec, uint32_t index)
     SET_SIZE(GET_BASE_PTR(vec), size - 1);
 }
 
+void sake_vector_clear(sake_vector *vec)
+{
+    uint32_t elt_size, size;
+    void *base;
+    sake_vector_destructor destructor;
+
+    base = GET_BASE_PTR(vec);
+    destructor = GET_DESTRUCTOR(base);
+    elt_size = GET_ELT_SIZE(base);
+    size = GET_SIZE(GET_BASE_PTR(vec));
+
+    if (destructor)
+    {
+        for (uint32_t i = 0; i < GET_SIZE(base); i++)
+        {
+            destructor(*(void **)AT(vec, i, elt_size));
+        }
+    }
+
+    memset(vec, 0, elt_size * size);
+    SET_SIZE(GET_BASE_PTR(vec), 0);
+}
+
 void sake_vector_erase_range(sake_vector *vec, uint32_t from, uint32_t to)
 {
     uint32_t size, elt_size;
