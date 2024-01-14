@@ -2,6 +2,7 @@
 #define SAKE_UTILS_H
 
 #include <stdint.h>
+#include <ctype.h>
 
 static inline uint32_t sake_utils_next_pow2(uint32_t v)
 {
@@ -40,6 +41,11 @@ static inline uint32_t sake_utils_utf8_from_code_point(uint16_t code_point)
     if (code_point < 0x80) return ((uint8_t) code_point);
     if (code_point < 0x800) return ((uint8_t) (0xC0 | (code_point >> 6))) | (((uint8_t) (0x80 | (code_point & 0x3F))) << 8);
     return ((uint8_t) (0xE0 | (code_point >> 12))) | (((uint8_t) (0x80 | ((code_point >> 6) & 0x3F))) << 8) | (((uint8_t) (0x80 | (code_point & 0x3F))) << 16);
+}
+
+static inline bool sake_utils_is_word_separator(char c)
+{
+    return isspace(c) || c == ',' || c == '.' || c == ';' || c == ':' || c == '!';
 }
 
 #endif /* SAKE_UTILS_H */
