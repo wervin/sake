@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 static inline uint32_t sake_utils_next_pow2(uint32_t v)
 {
