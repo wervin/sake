@@ -44,9 +44,4 @@ static inline uint32_t sake_utils_utf8_from_code_point(uint16_t code_point)
     return ((uint8_t) (0xE0 | (code_point >> 12))) | (((uint8_t) (0x80 | ((code_point >> 6) & 0x3F))) << 8) | (((uint8_t) (0x80 | (code_point & 0x3F))) << 16);
 }
 
-static inline bool sake_utils_is_word_separator(char c)
-{
-    return isspace(c) || c == ',' || c == '.' || c == ';' || c == ':' || c == '!';
-}
-
 #endif /* SAKE_UTILS_H */
